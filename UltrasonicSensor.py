@@ -1,3 +1,5 @@
+# This code is maintained by Benjamin Erich
+
 # This module interfaces an HC-SR04 (ultrasonic sensor) with a Raspberry Pi.
 # Add series external resistor to the ECHO pin as a safety precaution
 
