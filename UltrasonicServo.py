@@ -1,3 +1,5 @@
+# This code is maintained by Benjamin Erich
+
 # This module controls the servo motor for the ultrasonic sensor
 
 import RPi.GPIO as GPIO
