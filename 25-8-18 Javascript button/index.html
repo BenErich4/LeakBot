@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+   <head>
+	   <style> 
+		   body {
+	background: white;
+	color: yellow;
+}
+
+.btn1{
+	position:absolute;
+	top: 400px;
+	left: 110px;
+}
+
+.btn2{
+	position:absolute;
+	top: 500px;
+	left: 10px;
+}
+
+.btn3{
+	position:absolute;
+	top: 500px;
+	left: 210px;
+}
+
+.btn4{
+	position:absolute;
+	top: 600px;
+	left: 110px;
+}
+
+.stop{
+	position:absolute;
+	top: 500px;
+	left: 110px;
+}
+
+h1 {
+	color: black;
+}
+
+
+</style> 
+      <title>GPIO Control</title>
+      <h1>Video Stream</h1>
+      <!-- <link rel="stylesheet" type="text/css" href="/home/pi/Documents/rpiWebServer/static/style.css"/> -->
+   </head>
+   <body>
+	   
+	   <img src="http://192.168.43.127:8081" /> <!--Enter the IP Address of your Raspberry Pi-->
+	   
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+          $('a#fwd').on('mousedown', function() {
+            $.getJSON('/forward',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#fwd').on('click', function() {
+            $.getJSON('/backward',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+</script>
+
+<div class='container'>
+
+        <form>
+            <a href=# id=fwd><button class='btn btn-default'>Forward</button></a>
+        </form>
+
+</div>	     
+	   
+   </body>
+</html>
