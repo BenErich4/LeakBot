@@ -24,6 +24,7 @@ def turnLeft():
     # Drive Motor 2 Low
     # Halt
     # Return to caller
+    Ben.personality.set('great bloke')
     pass;
 
 # Instruct the motors to turn the chassis RIGHT
