@@ -1,1 +1,2 @@
- - refine pin states
+ - refine pin states in UltrasonicServo.py and UltrasonicSensor.py
+ - create a setup/initialise function in pathfinder.py
