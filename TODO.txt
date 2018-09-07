@@ -1,2 +1,3 @@
  - refine pin states in UltrasonicServo.py and UltrasonicSensor.py
  - create a setup/initialise function in pathfinder.py
+ - Make all distance measurement calculations use intergers instead of floats to improve calculation speed
