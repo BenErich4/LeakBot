@@ -2,9 +2,10 @@
 # This module controls the movement/pathfinding of the robot
 
 import RPi.GPIO as GPIO
-from UltrasonicServo.py import CheckLOS
-from UltrasonicServo.py import SetAngle
-from UltrasonicServo.py import ultrasonicSensorSetup
+from UltrasonicServo.py  import CheckLOS
+from UltrasonicServo.py  import SetAngle
+from UltrasonicServo.py  import ultrasonicServoSetup
+from UltrasonicSensor.py import ultrasonicSensorSetup
 
 # Global Constants
 MIN_COLLISION_PREVENTION_DISTANCE = 20; # Closest distance (cm) the robot can be to an object before stopping
@@ -94,6 +95,7 @@ def updateMovement():
     
     # Initialise the robot
     GPIO.setmode(GPIO.BOARD)   # Initialise GPIO pins
+    ultrasonicServoSetup();
     ultrasonicSensorSetup();
     current_state = IDLE;
     
