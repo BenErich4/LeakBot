@@ -8,10 +8,9 @@ from UltrasonicSensor.py import takeUltrasonicMeasurement
 
 # Defined Constants
 pinNumber = 7                   # Assigned GPIO pin to ultrasonic sensor's servo motor 
-GPIO.setwarnings(False)         # Disable console messages
-GPIO.setmode(GPIO.BOARD)        # Initialise GPIO pins
+#GPIO.setwarnings(False)        # Disable console messages
 
-def UltrasonicServoSetup():
+def ultrasonicServoSetup():
   GPIO.setup(pinNumber, GPIO.OUT) # Set assigned GPIO pin as output
 
 # Set the angle of the ultra sonic sensor's servo motor
@@ -31,9 +30,7 @@ def fireSensor(position):
   return (distanceMeasuredTemp);
 
 def CheckLOS(positon):
-  UltrasonicServoSetup();
   pwm=GPIO.PWM(pinNumber, 50); # adds PWM functionality to GPIO pin (50 Hz)
   pwm.start(0);
   fireSensor(position);
   pwm.stop();
-  GPIO.cleanup();
