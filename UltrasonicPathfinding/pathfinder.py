@@ -93,6 +93,7 @@ def updateMovement():
     distanceArrayTemp = [0, 0, 0]; # [LEFT, RIGHT, CENTRE]
     
     # Initialise the robot
+    GPIO.setmode(GPIO.BOARD)   # Initialise GPIO pins
     ultrasonicSensorSetup();
     current_state = IDLE;
     
