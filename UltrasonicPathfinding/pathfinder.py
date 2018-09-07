@@ -54,18 +54,18 @@ def scanSurroundings():
     
     # Turn the ultrasonic servo motor to LEFT RIGHT and CENTRE positions
     # Take a reading at each of these points and then return this data to the caller
-    distanceArrayTemp[LEFT_ARRAY_ELEMENT] = CheckLOS(LEFT);
+    distanceArrayTemp[LEFT_ARRAY_ELEMENT]   = CheckLOS(LEFT);
     sleep(DELAY)
     distanceArrayTemp[CENTRE_ARRAY_ELEMENT] = CheckLOS(CENTRE);
     sleep(DELAY)
-    distanceArrayTemp[RIGHT_ARRAY_ELEMENT] = CheckLOS(RIGHT);
+    distanceArrayTemp[RIGHT_ARRAY_ELEMENT]  = CheckLOS(RIGHT);
     sleep(DELAY)
-    SetAngle(CENTRE); # Re-centre the servo motor to face in front of the robot chassis
+    
+    SetAngle(CENTRE); # Re-centre the servo motor to face in front of the robot chassis to detect future head-on collisions
     return (distanceArrayTemp);
 
 
 # Determines what is the best path to take, given the surroundings
-# This module needs lots of tweaking - this is barebones at this moment 
 def makeDecision(distanceArrayTemp):
     # Scenario TURN-LEFT
     if (distanceArrayTemp[LEFT_ARRAY_ELEMENT] > distanceArrayTemp[RIGHT_ARRAY_ELEMENT] & distanceArrayTemp[LEFT_ARRAY_ELEMENT] > distanceArrayTemp[CENTRE_ARRAY_ELEMENT]):
@@ -76,16 +76,14 @@ def makeDecision(distanceArrayTemp):
         turnRight();
         
     # Scenario REVERSE
-    # This scenario needs fixing. Under certain circumstances the robot will not work as desired
-    # e.g. the probe is at a dead-end where the sides are greater in width to MIN_COLLISION_PREVENTION_DISTANCE
     elif (distanceArrayTemp[LEFT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[RIGHT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[CENTRE_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE):
         reverse();
 
-# movementMonitor() is the main function in this program that continuously directs the robot
-def movementMonitor():
+# This is the main procedure in this program that continuously directs the robot
+def updateMovement():
 
     # Record the current state the robot is in
-    # NB: Enumeration
+    # @note Type: enumeration
     class current_state(Enum):
         FORWARD = 1;
         REVERSE = 2;
@@ -94,15 +92,11 @@ def movementMonitor():
     # Recorded distance to the closest object on the LEFT, RIGHT and CENTRE sides of the robot
     distanceArrayTemp = [0, 0, 0]; # [LEFT, RIGHT, CENTRE]
     
-    # Initialise the ultrasonic sensor
+    # Initialise the robot
     ultrasonicSensorSetup();
-    
-    # Initialise Pathfinding
-    distanceArrayTemp = scanSurroundings();
-    makeDecision(distanceArrayTemp); # [LEFT, RIGHT, CENTRE]
+    current_state = IDLE;
     
     # Infinite Loop, main body of this program
-    # "Real programs never die" - PO'd
     while True:
         
         # Note: This 'if' statement could be replaced by an ISR, might reduce the processor load if checking was controlled by a timer.
@@ -117,10 +111,11 @@ def movementMonitor():
         elif (current_state == IDLE):
             distanceArrayTemp = scanSurroundings();
             makeDecision(distanceArrayTemp);
+            current_state = FORWARD;
 
         # Reverse robot and then determine a new path
         elif (current_state == REVERSE):
             reverse();
             current_state = IDLE;
 
-movementMonitor();
+updateMovement();
