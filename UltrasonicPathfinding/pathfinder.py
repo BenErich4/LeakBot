@@ -79,6 +79,9 @@ def makeDecision(distanceArrayTemp):
     # Scenario REVERSE
     elif (distanceArrayTemp[LEFT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[RIGHT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[CENTRE_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE):
         reverse();
+    
+def driveManually():
+    # Need to somehow get the button presses from the webpage to here to instruct the motors accordingly
 
 # This is the main procedure in this program that continuously directs the robot
 def updateMovement():
@@ -89,6 +92,7 @@ def updateMovement():
         FORWARD = 1;
         REVERSE = 2;
         IDLE    = 3;
+        MANUAL  = 4; # Manual control from user via web interface 
         
     # Recorded distance to the closest object on the LEFT, RIGHT and CENTRE sides of the robot
     distanceArrayTemp = [0, 0, 0]; # [LEFT, RIGHT, CENTRE]
@@ -101,6 +105,7 @@ def updateMovement():
     
     # Infinite Loop, main body of this program
     while True:
+        # Add variables to receive an external command for manual instruction by user
         
         # Note: This 'if' statement could be replaced by an ISR, might reduce the processor load if checking was controlled by a timer.
         # Continuously check the distance in front of the robot when driving FORWARD
@@ -120,5 +125,9 @@ def updateMovement():
         elif (current_state == REVERSE):
             reverse();
             current_state = IDLE;
+        
+        # User operates the robot manually    
+        elif (current_state == MANUAL):
+            driveManually();
 
 updateMovement();
