@@ -7,10 +7,11 @@ import time
 
 # Constants
 MIN_COLLISION_PREVENTION_DISTANCE = 20
-LEFT = 175 # Ultrasonic Servo Motor Position LEFT
+LEFT = 5 # Ultrasonic Servo Motor Position LEFT
 CENTRE = 90 # Ultrasonic Servo Motor Position CENTRE
-RIGHT = 5 # Ultrasonic Servo Motor Position RIGHT
-	
+RIGHT = 175 # Ultrasonic Servo Motor Position RIGHT
+DELAY = 0.1
+
 class SensorServo(object):
 
 	def __init__(self, angle, trigPin, echoPin, controlPin):
@@ -21,8 +22,7 @@ class SensorServo(object):
 		self._centreDist = 0
 		self._rightDist = 0
 		self._decision = "FORWARD"
-		self._pwm = " "
-		self._measuredDist = 0
+		self._pwm = 0
 
 	def setup(self):
 		GPIO.setwarnings(False)
@@ -32,24 +32,26 @@ class SensorServo(object):
 		GPIO.setup(self._trigPin, GPIO.OUT) # Sets the trig as an Output
 		GPIO.output(self._trigPin, 0)       # Set the trig pin LOW
 		self._pwm = GPIO.PWM(self._controlPin, 50); # adds PWM functionality to GPIO pin (50 Hz)
-		self.SetAngle(CENTRE)
+		self._pwm.start(0)
+		#self.SetAngle(CENTRE)
 
 	# Set the angle of the ultra sonic sensor's servo motor
 	def SetAngle(self, angle):
-		duty = (angle / 18) + 2
+		duty = (angle / 18.6) + 2.5
 		GPIO.output(self._controlPin, True)
 		self._pwm.ChangeDutyCycle(duty)
 		time.sleep(0.5)
 		GPIO.output(self._controlPin, False)
 		self._pwm.ChangeDutyCycle(0)
-
+		print angle
+		
 	def LookForward(self):
 		self.SetAngle(CENTRE)
 
 	def MakeDecision(self):
 		self.scanSurroundings()
 
-		 # Scenario TURN-LEFT
+		# Scenario TURN-LEFT
 		if (self._leftDist > self._rightDist):
 			self._direction = "LEFT"
 
@@ -58,31 +60,25 @@ class SensorServo(object):
 			self._direction = "RIGHT"
 			
 		# Scenario REVERSE
-		#elif (_rightDist < ):
-		 #   _direction = "REVERSE"
+		elif (self._rightDist < ):
+			_direction = "REVERSE"
 
 
 	# Scan to the LEFT, RIGHT and CENTRE of the robot to take measurements of its surroundings
 	def scanSurroundings(self):
 		# Turn the ultrasonic servo motor to LEFT RIGHT and CENTRE positions
 		# Take a reading at each of these points and then return this data to the caller
-		S_leftDist =  self.takeMeasurement(LEFT);
-		sleep(DELAY)
-		_centreDist = self.takeMeasurement(CENTRE);
-		sleep(DELAY)
-		_rightDist = self.takeMeasurement(RIGHT);
-		sleep(DELAY)
-		
-		self.SetAngle(90); # Re-centre the servo motor to face in front of the robot chassis to detect future head-on collisions
+		self.takeMeasurement(LEFT);
+		time.sleep(DELAY)
+		self.takeMeasurement(CENTRE);
+		time.sleep(DELAY)
+		self.takeMeasurement(RIGHT);
+		time.sleep(DELAY)
 
-	def takeMeasurement(positon):
-		pwm.start(0);
-		distance = 0;
-		SetAngle(position); # Rotate Servo to position to take distance measurement
+	def takeMeasurement(self, position):
+		self.SetAngle(position); # Rotate Servo to position to take distance measurement
 		#distance = fireSensor();
 		self.fireSensor(position)
-		pwm.stop();
-		return distance
 
 	def fireSensor(self, position):
 		# Release a _trigPinGER pulse from the ultrasonic sensor
@@ -106,6 +102,9 @@ class SensorServo(object):
 			self._centreDist = measuredDistanceTemp
 		elif (position == RIGHT):
 			self._rightDist = measuredDistanceTemp
+			self.SetAngle(CENTRE); # Re-centre the servo motor to face in front of the robot chassis to detect future head-on collisions
+			self._pwm.stop();
+			
 		
 		# @note: DEBUG ONLY
 		# Display measurement and corresponding time
