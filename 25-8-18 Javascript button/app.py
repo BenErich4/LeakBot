@@ -3,10 +3,10 @@ import subprocess, os, signal
 
 from flask import Flask, render_template, Response, request, redirect, url_for
 
-UPLOAD_FOLDER = '/home/pi/Documents/rpiWebServer'
+UPLOAD_FOLDER = '/home/pi/LeakBot'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpeg'])
 
-app = Flask(__name__,template_folder = '/home/pi/Documents/rpiWebServer/templates')
+app = Flask(__name__,template_folder = '/home/pi/LeakBot/25-8-18 Javascript button/templates')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
@@ -43,9 +43,9 @@ def index():
 	
 @app.route("/forward")
 def forward():
-	pwm1 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledRed.py", shell=True)
-	pwm2 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledYlw.py", shell=True)
-	pwm3 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledGrn.py", shell=True)
+	pwm1 = subprocess.Popen("/home/pi/LeakBot/rpiWebServer/ledRed.py", shell=True)
+	pwm2 = subprocess.Popen("/home/pi/LeakBot/rpiWebServer/ledYlw.py", shell=True)
+	pwm3 = subprocess.Popen("/home/pi/LeakBot/rpiWebServer/ledGrn.py", shell=True)
 
 	return False;
 	
@@ -59,4 +59,4 @@ def backward():
 	return False;
 		
 if __name__ == "__main__":
-   app.run(host='192.168.43.127', port=80, debug=True)
+   app.run(host='0.0.0.0', debug = True)
