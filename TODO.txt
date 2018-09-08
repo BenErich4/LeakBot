@@ -1,0 +1,4 @@
+ - [SOLVED] refine pin states in UltrasonicServo.py and UltrasonicSensor.py
+ - [unecessary] create a setup/initialise function in pathfinder.py
+ - Make all distance measurement calculations use intergers instead of floats to improve calculation speeds
+ - Commence testing the robot software and hardware

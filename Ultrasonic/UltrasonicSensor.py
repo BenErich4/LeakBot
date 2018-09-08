@@ -1,31 +1,31 @@
 # This code is maintained by Benjamin Erich
 
 # This module interfaces an HC-SR04 (ultrasonic sensor) with a Raspberry Pi.
-# Add series external resistor to the ECHO pin as a safety precaution
+# @note: Add series external resistor to the ECHO pin as a safety precaution
 
 import RPi.GPIO as GPIO
 import time
 
-# GPIO pins used
+# GPIO pins used for the ultra sonic sensor's TRIGGER and ECHO pins 
 TRIG = 7
 ECHO = 11
     
 def ultrasonicSensorSetup():
-    GPIO.setwarnings(False)    # Disable console messages
-    GPIO.setmode(GPIO.BOARD)   # Initialise GPIO pins 
+    #GPIO.setwarnings(False)    # Disable console messages
     GPIO.setup(ECHO, GPIO.IN)  # Sets the echo as an Input
     GPIO.setup(TRIG, GPIO.OUT) # Sets the trig as an Output
-    GPIO.output(TRIG, 0)
+    GPIO.output(TRIG, 0)       # Set the trig pin LOW
     print("Ultrasonic Sensor Successfully Initialised")
 
 def takeUltrasonicMeasurement():
-    print("Starting Measurement...")
+    measuredDistanceTemp = 0;
 
+    # Release a TRIGGER pulse from the ultrasonic sensor
     GPIO.output(TRIG, 1)
     time.sleep(0.00001)
     GPIO.output(TRIG, 0)
 
-    # Time the signal
+    # Time the return of the TRIGGER pulse signal back to the ultrasonic sensor
     while GPIO.input(ECHO) == 0:
         pass
     start = time.time()
@@ -33,12 +33,11 @@ def takeUltrasonicMeasurement():
         pass
     stop = time.time()
 
-    # Display measurement and corresponding time
-    print("Distance: " + str(round(((stop - start) * 17000), 3)) + " cm")
-    print("Time:      " + str(round((stop - start)*1000, 3)) + " ms")
+    measuredDistanceTemp = round(((stop - start) * 17000), 3);
 
-print("*** Start Ultrasonic Test ***\n\n")
-ultrasonicSensorSetup()
-takeUltrasonicMeasurement()
-GPIO.cleanup()
-print("\n\n*** End Ultrasonic Test ***\n\n")
+    # @note: DEBUG ONLY
+    # Display measurement and corresponding time
+    # print("Distance:  " + str(measuredDistanceTemp) + " cm")
+    # print("Time:      " + str(round((stop - start)*1000, 3)) + " ms")
+    
+    return measuredDistanceTemp;
