@@ -1,21 +1,17 @@
-# This code is maintained by Benjamin Erich
+# This code is maintained by Benjamin Eric and Lachlan Clark
 # This module interfaces an HC-SR04 (ultrasonic sensor) with a Raspberry Pi.
 # @note: Add series external resistor to the ECHO pin as a safety precaution
 
 import RPi.GPIO as GPIO
 import time
 
-# Defined Constants
-#pinNumber = 2                   # Assigned GPIO pin to ultrasonic sensor's servo motor
-#GPIO.setwarnings(False)        # Disable console messages
-
+# Constants
+MIN_COLLISION_PREVENTION_DISTANCE = 20
+LEFT = 175 # Ultrasonic Servo Motor Position LEFT
+CENTRE = 90 # Ultrasonic Servo Motor Position CENTRE
+RIGHT = 5 # Ultrasonic Servo Motor Position RIGHT
+	
 class SensorServo(object):
-
-	MIN_COLLISION_PREVENTION_DISTANCE = 20
-	# GPIO pins used for the ultra sonic sensor's TRIGGER and ECHO pins 
-	LEFT = 175 # Ultrasonic Servo Motor Position LEFT
-	CENTRE = 90  # Ultrasonic Servo Motor Position CENTRE
-	RIGHT = 5   # Ultrasonic Servo Motor Position RIGHT
 
 	def __init__(self, angle, trigPin, echoPin, controlPin):
 		self._trigPin = trigPin
@@ -27,15 +23,16 @@ class SensorServo(object):
 		self._decision = "FORWARD"
 		self._pwm = " "
 		self._measuredDist = 0
-		print("constructed")
 
 	def setup(self):
-		GPIO.setup(self._controlPin, GPIO.OUT) # Set assigned GPIO pin as output
+		GPIO.setwarnings(False)
+		GPIO.cleanup()
+		GPIO.setup(self._controlPin, GPIO.OUT)
 		GPIO.setup(self._echoPin, GPIO.IN)  # Sets the echo as an Input
 		GPIO.setup(self._trigPin, GPIO.OUT) # Sets the trig as an Output
 		GPIO.output(self._trigPin, 0)       # Set the trig pin LOW
 		self._pwm = GPIO.PWM(self._controlPin, 50); # adds PWM functionality to GPIO pin (50 Hz)
-		self.SetAngle(90)
+		self.SetAngle(CENTRE)
 
 	# Set the angle of the ultra sonic sensor's servo motor
 	def SetAngle(self, angle):
@@ -47,7 +44,7 @@ class SensorServo(object):
 		self._pwm.ChangeDutyCycle(0)
 
 	def LookForward(self):
-		self.SetAngle(90)
+		self.SetAngle(CENTRE)
 
 	def MakeDecision(self):
 		self.scanSurroundings()
@@ -69,7 +66,7 @@ class SensorServo(object):
 	def scanSurroundings(self):
 		# Turn the ultrasonic servo motor to LEFT RIGHT and CENTRE positions
 		# Take a reading at each of these points and then return this data to the caller
-		_leftDist =  self.takeMeasurement(LEFT);
+		S_leftDist =  self.takeMeasurement(LEFT);
 		sleep(DELAY)
 		_centreDist = self.takeMeasurement(CENTRE);
 		sleep(DELAY)
@@ -83,11 +80,11 @@ class SensorServo(object):
 		distance = 0;
 		SetAngle(position); # Rotate Servo to position to take distance measurement
 		#distance = fireSensor();
-		self.fireSensor()
+		self.fireSensor(position)
 		pwm.stop();
 		return distance
 
-	def fireSensor(self):
+	def fireSensor(self, position):
 		# Release a _trigPinGER pulse from the ultrasonic sensor
 		GPIO.output(self._trigPin, 1)
 		time.sleep(0.00001)
@@ -103,11 +100,15 @@ class SensorServo(object):
 
 		measuredDistanceTemp = round(((stop - start) * 17000), 3);
 		
-		self._measuredDist = measuredDistanceTemp
+		if (position == LEFT):
+			self._leftDist = measuredDistanceTemp
+		elif (position == CENTRE):
+			self._centreDist = measuredDistanceTemp
+		elif (position == RIGHT):
+			self._rightDist = measuredDistanceTemp
+		
 		# @note: DEBUG ONLY
 		# Display measurement and corresponding time
 		#print("Distance:  " + str(measuredDistanceTemp) + " cm")
 		# print("Time:      " + str(round((stop - start)*1000, 3)) + " ms")
-		#_measuredDist = measuredDistanceTemp
-		#return str(self.measuredDistanceTemp);
 		

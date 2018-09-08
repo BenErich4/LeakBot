@@ -1,7 +1,13 @@
 import RPi.GPIO as GPIO
 import UltrasonicSensor
 
+#Constants
+MIN_COLLISION_PREVENTION_DISTANCE = 20
+LEFT = 175 # Ultrasonic Servo Motor Position LEFT
+CENTRE = 90 # Ultrasonic Servo Motor Position CENTRE
+RIGHT = 5 # Ultrasonic Servo Motor Position RIGHT
 # Global Constants
+
 MAX_COLLISION_PREVENTION_DISTANCE = 20; # Furthest distance (cm) the robot can be to an object before stopping
 MOTOR_ONE_CONTROL_PIN = 7;  # Defines which GPIO connects to the control signal of MOTOR 1
 MOTOR_TWO_CONTROL_PIN = 11; # Defines which GPIO connects to the control signal of MOTR 2
@@ -15,8 +21,12 @@ def main():
 	GPIO.setmode(GPIO.BOARD);
 	sensorServo = UltrasonicSensor.SensorServo(90, 7, 11, 13)
 	sensorServo.setup()
-	sensorServo.fireSensor()
-	print sensorServo._measuredDist
+	sensorServo.fireSensor(LEFT)
+	sensorServo.fireSensor(CENTRE)
+	sensorServo.fireSensor(RIGHT)
+	print sensorServo._leftDist
+	print sensorServo._centreDist
+	print sensorServo._rightDist
 	
 	print("yeah buddy")
 	GPIO.cleanup();
