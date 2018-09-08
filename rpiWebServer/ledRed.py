@@ -22,9 +22,9 @@ GPIO.output(ledYlw, GPIO.LOW)
 GPIO.output(ledGrn, GPIO.LOW)
 
 
-while True:
-	time.sleep(0.0095)
-	GPIO.output(ledRed, 1)
-	time.sleep(0.0005)
-	GPIO.output(ledRed, 0)
+while 1:
+	time.sleep(0.015)
+	GPIO.output(ledGrn, 1)
+	time.sleep(0.005)
+	GPIO.output(ledGrn, 0)
 
