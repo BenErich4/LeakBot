@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+
+    <body>
+		
+        <div id="response"></div>
+
+        <script
+			src="https://code.jquery.com/jquery-3.2.1.min.js"
+			integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			crossorigin="anonymous">
+		</script>
+
+		<script type="text/javascript">
+			function updateGPS() {
+				$.ajax({
+				//ajax = Asynchronous Javascript And XML
+				//basically, javascript/jquery sends an HTTP request from client to server,
+				//the server (app.py) runs a function specified by the app route url and gets a return value,
+				//this return value is a bit of HTML that is then written to the webpage
+				//**all of this happens without the page refreshing
+				
+				//send HTTP request to /_get_gps/ app route
+				url: "/_get_gps/",
+				type: "POST",
+				//when gets a successful response..
+				success: function(response){
+					//overwrite data in <div> id="response"
+					$('div#response').html(response.data);
+				}
+				});
+				//run this function again after 1000ms
+				setTimeout(updateGPS, 1000);
+			}
+			
+			//run updateGPS initially when the page loads (ie: when 'ready') 
+			//the function will then continue to call itself over and over again
+			$(document).ready(function() {
+				setTimeout(updateGPS, 1000);
+			});
+  </script>
+
+    </body>
+</html>
