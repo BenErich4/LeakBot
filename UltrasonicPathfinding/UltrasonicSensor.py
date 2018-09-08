@@ -1,4 +1,4 @@
-
+    
 # This code is maintained by Benjamin Erich
 
 # This module interfaces an HC-SR04 (ultrasonic sensor) with a Raspberry Pi.
@@ -7,20 +7,17 @@
 import RPi.GPIO as GPIO
 import time
 
-# GPIO pins used for the ultra sonic sensor's TRIGGER and ECHO pins 
-TRIG = 7
-ECHO = 11
-LEFT   = 175 # Ultrasonic Servo Motor Position LEFT
-CENTRE = 90  # Ultrasonic Servo Motor Position CENTRE
-RIGHT  = 5   # Ultrasonic Servo Motor Position RIGHT
-
 # Defined Constants
 pinNumber = 2                   # Assigned GPIO pin to ultrasonic sensor's servo motor
 #GPIO.setwarnings(False)        # Disable console messages
 
 class SensorServo(object):
 
-    MIN_COLLISION_PREVENTION_DISTANCE = 20
+	MIN_COLLISION_PREVENTION_DISTANCE = 20
+	# GPIO pins used for the ultra sonic sensor's TRIGGER and ECHO pins 
+	LEFT = 175 # Ultrasonic Servo Motor Position LEFT
+	CENTRE = 90  # Ultrasonic Servo Motor Position CENTRE
+	RIGHT = 5   # Ultrasonic Servo Motor Position RIGHT
 
     def __init__(self, angle, trigPin, echoPin, controlPin):
         self._angle = angle
@@ -31,14 +28,14 @@ class SensorServo(object):
         self._centreDist = 0
         self._rightDist = 0
         self._decision = "FORWARD"
-        self._pwm = GPIO.PWM(controlPin, 50); # adds PWM functionality to GPIO pin (50 Hz)
+        self._pwm = " "
 
     def setup():
-        GPIO.setmode(BOARD)
         GPIO.setup(_controlPin, GPIO.OUT) # Set assigned GPIO pin as output
         GPIO.setup(_echoPin, GPIO.IN)  # Sets the echo as an Input
         GPIO.setup(_trigPin, GPIO.OUT) # Sets the trig as an Output
         GPIO.output(_trigPin, 0)       # Set the trig pin LOW
+        _pwm = GPIO.PWM(controlPin, 50); # adds PWM functionality to GPIO pin (50 Hz)
         self.SetAngle(90)
 
     # Set the angle of the ultra sonic sensor's servo motor
@@ -86,23 +83,23 @@ class SensorServo(object):
       pwm.start(0);
       distance = 0;
       SetAngle(position); # Rotate Servo to position to take distance measurement
-      distance = takeUltrasonicMeasurement();
+      distance = fireSensor();
       pwm.stop();
       return distance
 
-    def takeUltrasonicMeasurement():
+    def fireSensor():
         measuredDistanceTemp = 0;
 
-        # Release a TRIGGER pulse from the ultrasonic sensor
-        GPIO.output(TRIG, 1)
+        # Release a _trigPinGER pulse from the ultrasonic sensor
+        GPIO.output(_trigPin, 1)
         time.sleep(0.00001)
-        GPIO.output(TRIG, 0)
+        GPIO.output(_trigPin, 0)
 
-        # Time the return of the TRIGGER pulse signal back to the ultrasonic sensor
-        while GPIO.input(ECHO) == 0:
+        # Time the return of the _trigPinGER pulse signal back to the ultrasonic sensor
+        while GPIO.input(_echoPin) == 0:
             pass
         start = time.time()
-        while GPIO.input(ECHO) == 1:
+        while GPIO.input(_echoPin) == 1:
             pass
         stop = time.time()
 
