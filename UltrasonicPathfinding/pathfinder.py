@@ -14,10 +14,10 @@ CENTRE_ARRAY_ELEMENT = 2; # Data in the array that represents the reading from t
 def main():
 	GPIO.setmode(GPIO.BOARD);
 	sensorServo = UltrasonicSensor.SensorServo(90, 7, 11, 13)
-	sensorServo.setup
-	dist = sensorServo.fireSensor
-	print(dist)
+	sensorServo.setup()
+	sensorServo.fireSensor()
+	print sensorServo._measuredDist
 	
 	print("yeah buddy")
-
+	GPIO.cleanup();
 main();
