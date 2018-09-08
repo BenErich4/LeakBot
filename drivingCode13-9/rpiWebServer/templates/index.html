@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+   <head>
+	   <style> 
+		   body {
+	background: white;
+	color: yellow;
+}
+
+.Up{
+	position:absolute;
+	top: 400px;
+	left: 110px;
+}
+
+.Left{
+	position:absolute;
+	top: 500px;
+	left: 10px;
+}
+
+.Right{
+	position:absolute;
+	top: 500px;
+	left: 210px;
+}
+
+.Down{
+	position:absolute;
+	top: 600px;
+	left: 110px;
+}
+
+.stop{
+	position:absolute;
+	top: 500px;
+	left: 110px;
+}
+
+h1 {
+	color: black;
+}
+
+
+</style> 
+      <title>GPIO Control</title>
+      <h1>Video Stream</h1>
+      <!-- <link rel="stylesheet" type="text/css" href="/home/pi/Documents/rpiWebServer/static/style.css"/> -->
+   </head>
+   <body>
+	   
+	   <img src="http://192.168.43.127:8081" /> <!--Enter the IP Address of your Raspberry Pi-->
+	   
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+          $('a#forwards').on('mousedown', function() {
+            $.getJSON('/forwards',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#forwards').on('click', function() {
+            $.getJSON('/stop',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+        
+        $(function() {
+          $('a#backwards').on('mousedown', function() {
+            $.getJSON('/backwards',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#backwards').on('click', function() {
+            $.getJSON('/stop',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+        
+        $(function() {
+          $('a#left').on('mousedown', function() {
+            $.getJSON('/left',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#left').on('click', function() {
+            $.getJSON('/stop',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+        
+        $(function() {
+          $('a#right').on('mousedown', function() {
+            $.getJSON('/right',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#right').on('click', function() {
+            $.getJSON('/stop',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+        
+        
+        
+</script>
+
+<div class='Up'>
+        <form>
+            <a href=# id=forwards><img src="https://openclipart.org/download/2211/kuba-arrow-button-set-3.svg" style="width:82px; height:86px" title="Btn Up" alt="arrow"></a>
+        </form>    
+</div>	    
+
+<div class='Left'>
+        <form>
+			<a href=# id=left><img src="https://openclipart.org/download/2209/kuba-arrow-button-set-1.svg" style="width:82px; height:86px" title="arrow" alt="arrow"></a>
+        </form>    
+</div>	
+
+<div class='Right'>
+        <form>
+			<a href=# id=right><img src="https://openclipart.org/download/2210/kuba-arrow-button-set-2.svg" style="width:82px; height:86px" title="arrow" alt="arrow"></a>
+        </form>    
+</div>	
+
+<div class='Down'>
+        <form>
+			<a href=# id=backwards><img src="https://openclipart.org/download/2212/kuba-arrow-button-set-4.svg" style="width:82px; height:86px" title="arrow" alt="arrow"></a>
+        </form>    
+</div>	
+
+<div class='stop'>
+        <form>
+			<a href=# id=stop><img src="https://openclipart.org/download/19519/schoolfreeware-Stop-Sign.svg" style="width:82px; height:86px" title="stop" alt="Stop"></a>
+        </form>    
+</div>	 
+	   
+   </body>
+</html>
