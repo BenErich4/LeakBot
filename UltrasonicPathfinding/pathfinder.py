@@ -20,7 +20,8 @@ RIGHT_ARRAY_ELEMENT  = 1; # Data in the array that represents the reading from t
 CENTRE_ARRAY_ELEMENT = 2; # Data in the array that represents the reading from the CENTRE side of the chassis
 
 # Instruct the motors to turn the chassis LEFT
-def turnLeft():
+# @parameter: Time in ms that the motors will drive for (100 ms is default for manual control mode)
+def turnLeft(autonomousDriveTime, manualDriveTime=100):
     # Drive Motor 1 High
     # Drive Motor 2 Low
     # Halt
@@ -28,7 +29,8 @@ def turnLeft():
     pass;
 
 # Instruct the motors to turn the chassis RIGHT
-def turnRight():
+# @parameter: Time in ms that the motors will drive for (100 ms is default for manual control mode)
+def turnRight(autonomousDriveTime, manualDriveTime=100):
     # Drive Motor 2 High
     # Drive Motor 1 Low
     # Halt
@@ -36,10 +38,17 @@ def turnRight():
     pass;
     
 # Instruct the motors to REVERSE the chassis
-def reverse():
+# @parameter: Time in ms that the motors will drive for (100 ms is default for manual control mode)
+def reverse(autonomousDriveTime, manualDriveTime=100):
     # Reverse for a brief period of time and then
     # Halt
     # Return to caller
+    pass;
+
+# Instruct the motors to move the chassis FORWARD (100 ms is default for manual control mode)
+# @parameter: Time in ms that the motors will drive for
+def forward(autonomousDriveTime, manualDriveTime=100):
+    # Drive Forward
     pass;
 
 # Instruct the motors to HALT the chassis 
@@ -79,8 +88,10 @@ def makeDecision(distanceArrayTemp):
     # Scenario REVERSE
     elif (distanceArrayTemp[LEFT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[RIGHT_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE & distanceArrayTemp[CENTRE_ARRAY_ELEMENT] <= MIN_COLLISION_PREVENTION_DISTANCE):
         reverse();
-    
-def driveManually():
+        
+# Allows the user to manually control the robot
+# @parameter: User instruction e.g. turnLeft, turnRight, reverse, forward, halt
+def driveManually(userInstruction):
     # Need to somehow get the button presses from the webpage to here to instruct the motors accordingly
 
 # This is the main procedure in this program that continuously directs the robot
