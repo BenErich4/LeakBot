@@ -21,10 +21,5 @@ GPIO.output(ledRed, GPIO.LOW)
 GPIO.output(ledYlw, GPIO.LOW)
 GPIO.output(ledGrn, GPIO.LOW)
 
-
-while True:
-	time.sleep(0.0095)
-	GPIO.output(ledGrn, 1)
-	time.sleep(0.0005)
-	GPIO.output(ledGrn, 0)
+p = GPIO.PWM(
 

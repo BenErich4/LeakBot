@@ -1,25 +1,45 @@
 import RPi.GPIO as GPIO
-import subprocess, os, signal
-from flask import Flask, render_template, request
+import subprocess, os, signal, time
+
+from flask import Flask, render_template, Response, request, redirect, url_for
+
+UPLOAD_FOLDER = '/home/pi/Documents/rpiWebServer'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpeg'])
+
 app = Flask(__name__,template_folder = '/home/pi/Documents/rpiWebServer/templates')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 #define actuators GPIOs
-ledRed = 18
-ledYlw = 19
-ledGrn = 26
-#initialize GPIO status variables
-ledRedSts = 0
-ledYlwSts = 0
-ledGrnSts = 0
+STDBY = 6
+
+AIN1 = 21
+AIN2 = 13
+PWMA = 26
+
+BIN1 = 20
+BIN2 = 16
+PWMB = 19
+
 # Define led pins as output
-GPIO.setup(ledRed, GPIO.OUT)   
-GPIO.setup(ledYlw, GPIO.OUT) 
-GPIO.setup(ledGrn, GPIO.OUT) 
+GPIO.setup(STDBY, GPIO.OUT)   
+GPIO.setup(AIN1, GPIO.OUT) 
+GPIO.setup(AIN2, GPIO.OUT) 
+GPIO.setup(BIN1, GPIO.OUT)
+GPIO.setup(BIN2, GPIO.OUT)
+GPIO.setup(PWMA, GPIO.OUT)
+GPIO.setup(PWMB, GPIO.OUT)
 # turn leds OFF 
-GPIO.output(ledRed, GPIO.LOW)
-GPIO.output(ledYlw, GPIO.LOW)
-GPIO.output(ledGrn, GPIO.LOW)
+GPIO.output(STDBY, GPIO.LOW)
+GPIO.output(AIN1, GPIO.LOW)
+GPIO.output(AIN2, GPIO.LOW)
+GPIO.output(BIN1, GPIO.LOW)
+GPIO.output(BIN2, GPIO.LOW)
+GPIO.output(PWMA, GPIO.LOW)
+GPIO.output(PWMB, GPIO.LOW)
 
 def check_kill_process(pstring):
 	for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
@@ -27,55 +47,62 @@ def check_kill_process(pstring):
 		pid = fields[0]
 		os.kill(int(pid), signal.SIGKILL)
 		
-	
 @app.route("/")
 def index():
-	# Read Sensors Status
-	ledRedSts = GPIO.input(ledRed)
-	ledYlwSts = GPIO.input(ledYlw)
-	ledGrnSts = GPIO.input(ledGrn)
-	templateData = {
-              'title' : 'GPIO output Status!',
-              'ledRed'  : ledRedSts,
-              'ledYlw'  : ledYlwSts,
-              'ledGrn'  : ledGrnSts,
-        }
-	return render_template('index.html', **templateData)
-	
-@app.route("/<deviceName>/<action>")
-def action(deviceName, action):
-	
-	
-	if deviceName == 'ledRed' and action == "on":
-		pwm1 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledRed.py", shell=True)
-	
-	if deviceName == 'ledYlw' and action == "on":
-		pwm2 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledYlw.py", shell=True)
-	
-	if deviceName == 'ledGrn' and action == "on":
-		pwm3 = subprocess.Popen("/home/pi/Documents/rpiWebServer/ledGrn.py", shell=True)
 
+	return render_template('index.html')
+	
+@app.route("/forwards")
+def forwards():
+	check_kill_process("forwards.py")
+	check_kill_process("backwards.py")
+	check_kill_process("left.py")	
+	check_kill_process("right.py")	
+	pwm1 = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
 
-	if deviceName == 'ledRed' and action == "off":
-		check_kill_process("ledRed.py")	
+	return False;
+	
+@app.route("/backwards")
+def backwards():
+	check_kill_process("forwards.py")
+	check_kill_process("backwards.py")
+	check_kill_process("left.py")	
+	check_kill_process("right.py")	
+	pwm2 = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
+
+	return False;
+	
+@app.route("/left")
+def left():
+	check_kill_process("forwards.py")
+	check_kill_process("backwards.py")
+	check_kill_process("left.py")	
+	check_kill_process("right.py")	
+	pwm3 = subprocess.Popen("/home/pi/Documents/rpiWebServer/left.py", shell=True)
+
+	return False;
+	
+@app.route("/right")
+def right():
+	check_kill_process("forwards.py")
+	check_kill_process("backwards.py")
+	check_kill_process("left.py")	
+	check_kill_process("right.py")	
+	pwm4 = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
+
+	return False;
+	
+@app.route("/stop")
+def stop():
+	GPIO.output(STDBY, 0)
+	check_kill_process("forwards.py")
+	check_kill_process("backwards.py")
+	check_kill_process("left.py")	
+	check_kill_process("right.py")	
+
+	GPIO.output(STDBY, 0)
+
+	return False;
 		
-	if deviceName == 'ledYlw' and action == "off":
-		check_kill_process("ledYlw.py")
-	
-	if deviceName == 'ledGrn' and action == "off":
-		check_kill_process("ledGrn.py")
-
-		
-		     
-	ledRedSts = GPIO.input(ledRed)
-	ledYlwSts = GPIO.input(ledYlw)
-	ledGrnSts = GPIO.input(ledGrn)
-   
-	templateData = {
-              'ledRed'  : ledRedSts,
-              'ledYlw'  : ledYlwSts,
-              'ledGrn'  : ledGrnSts,
-	}
-	return render_template('index.html', **templateData)
 if __name__ == "__main__":
-   app.run(host='0.0.0.0', debug=True)
+   app.run(host='172.20.10.7', port=80, debug=True)
