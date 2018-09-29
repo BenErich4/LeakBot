@@ -41,6 +41,7 @@ def read():
 				#in the FGPMMOPA6H chip datasheet)
 				gpsData['latitude'] = -convertToDecimal(data[3])
 				gpsData['longitude'] = convertToDecimal(data[5])
+				gpsData['bearing'] = data[8]
 				gpsData['fix'] = True
 				return gpsData
 			else:

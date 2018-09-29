@@ -28,9 +28,9 @@ def main():
 	sensorServo.setup()
 	sensorServo.scanSurroundings()
 		
-	print sensorServo._leftDist
-	print sensorServo._centreDist
-	print sensorServo._rightDist
+	print sensorServo.leftDist
+	print sensorServo.centreDist
+	print sensorServo.rightDist
 	sleep(3)
 	
 	print("yeah buddy")
