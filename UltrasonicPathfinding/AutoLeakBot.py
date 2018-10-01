@@ -5,9 +5,10 @@
 import RPi.GPIO as GPIO
 import time
 import gpsReader.py as GPS
+import math
 
 # Constants
-MIN_COLLISION_PREVENTION_DISTANCE = 20 # Furthest distance (cm) the robot can be to an object before stopping
+MIN_COLLISION_DISTANCE = 20 # Furthest distance (cm) the robot can be to an object before stopping
 LEFT = 5 # Ultrasonic Servo Motor Position LEFT
 CENTRE = 90 # Ultrasonic Servo Motor Position CENTRE
 RIGHT = 175 # Ultrasonic Servo Motor Position RIGHT
@@ -39,7 +40,7 @@ class AutoLeakBot(object)
 		self.rightSensorDist = 0
 		self.servoPWM = 0
 		self.waterFound = False # has it found water?
-		self.backAgain = False # has it returned after finding water?
+		self.backAtStart = False # has it returned after finding water?
 	
 
 	def setup(self):
@@ -58,10 +59,10 @@ class AutoLeakBot(object)
 		GPIO.add_event_detect(WATER_PIN, GPIO.RISING, callback = waterDetected) # add interrupt to water pin, waterDetected set as ISR
 		GPIO.output(TRIGGER_PIN, 0)
 		self.readGPS('LatLong', 'intial')
-		self.servoPWM = GPIO.PWM(SERVO_PIN, 50); # adds PWM functionality to GPIO pin (50 Hz)
+		self.servoPWM = GPIO.PWM(SERVO_PIN, 50); # adds PWM functionality to servo control pin (50 Hz)
 		self.servoPWM.start(0)
-		self.setSensorAngle(CENTRE)	
-	
+		self.setSensorAngle(CENTRE)	# make sensor point forward
+
 
 	# readingType specifies latLong or bearing reading, callType specifies if taking current reading or reading for water or intial position coordinates	
 	def readGPS(self, readingType, callType):
@@ -75,8 +76,8 @@ class AutoLeakBot(object)
 		# coordinates more accurately while stationary, and the bearing more accurateley while moving
 		if (readingType == 'LatLong')
 			if (callType == 'current')
-				self.currentlat = gpsData['latitude']
-				self.currentlat = gpsData['longitude']
+				self.currentLat = gpsData['latitude']
+				self.currentLat = gpsData['longitude']
 			elif (callType == 'intial')
 				self.startLat = gpsData['latitude']
 				self.startLong = gpsData['longitude']
@@ -92,8 +93,50 @@ class AutoLeakBot(object)
 		# need to know its current bearing from last gps reading, its current gps coords and the 
 		# starting gps coords
 
+		startBearing = self.getBearingToStart()
+		turnAngle = startBearing - self.currentBearing
+		self.turnByAngle(turnAngle)
 
-	def turnByXYZDegrees(self, bearing):
+
+	def getBearingToStart(self):
+		# returns the compass bearing from current position to starting position
+
+		self.readGPS('LatLong', 'current')
+		
+		if (self.startLat > self.currentLat)
+			# bearing in first quadrant
+			if (self.startLong > self.currentLong)
+				theta = atan((self.startLat - self.currentLat) / (self.startLong - self.currentLong))
+			# bearing in second quadrant
+			elif (self.startLong < self.currentLong)
+				theta = 180 - atan((self.startLat - self.currentLat) / (self.currentLong - self.startLong))
+			# case that start is directly east of current position
+			else
+				theta = 90
+		elif (self.startLat < self.currentLat)
+			# bearing in third quadrant
+			if (self.startLong < self.currentLong)
+				theta = 180 + atan((self.currentLat - self.startLat) / (self.currentLong - self.startLong))
+			# bearing in forth quadrand
+			elif (self.startLong > self.currentLong)
+				theta = 360 - atan((self.currentLat - self.startLat) / (self.startLong - self.currentLong))
+			# case that start is directly west of current position
+			else
+				theta = 270
+		# elif (self.startLat == self.currentLat)
+		else
+			# case that start is directly north of current position
+			if (self.startLong > self.currentLong)
+				theta = 0
+			# elif (self.startLong < self.currentLong)
+			# case that start is directly south of current position
+			else
+				theta = 180
+
+		return theta
+
+
+	def turnByAngle(self, bearing):
 		# takes a number in degrees between -179 to 180 that the robot needs to turn
 		# (the reference zero degrees point is the way it's now pointing, positive degrees = clockwise)
 		# need to test motors to see the relationship between motor speed/time and degrees rotated
@@ -111,12 +154,14 @@ class AutoLeakBot(object)
 		print angle
 
 	def waterDetected(self):
+		# self.stopMovement
 		self.readGPS('LatLong', 'water')
 		# take photo
 		self.waterFound = True # ****will this break the searching loop immediately after?
 		
 
 	def makeDecision(self):
+		self.stopMoving()
 		self.scanSurroundings()
 
 		# Scenario TURN-LEFT
@@ -142,6 +187,17 @@ class AutoLeakBot(object)
 		time.sleep(DELAY)
 		self.setSensorAngle(CENTRE); # Re-centre the servo motor to face in front of the robot chassis to detect future head-on collisions
 		self.servoPWM.stop();
+
+
+	def checkAhead(self):
+		self.takeMeasurement(CENTRE)
+
+
+	def isObstructed(self)
+		if (self.centreSensorDist < MIN_COLLISION_DISTANCE)
+			return True
+		else
+			return False
 
 
 	def takeMeasurement(self, position):
@@ -181,12 +237,28 @@ class AutoLeakBot(object)
 
 	# for motor control
 	def moveforward(self):
+		# moves forward indefinitley
+		print('FORWARD')
+		# possibly a subprocess to drive motors until stopped with a 'kill' command
+		# sleep(1000)
+		# need to take bearing measurements periodically while it's moving forward somehow
+
+		# or simply set pins HIGH/PWM?
 
 
 	def turnRight(self):
+		print('RIGHT')	
 
 
 	def turnLeft(self):
+		print('LEFT')
 
 
 	def reverse(self):
+		print('REVERSE')
+
+
+	def stopMovement(self)
+		# a 'kill' command for a subprocess?
+
+		# or simply set pins LOW?
