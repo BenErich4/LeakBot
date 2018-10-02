@@ -4,14 +4,14 @@ import time
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-#define actuators GPIOs
-STDBY = 6
-AIN1 = 21
-AIN2 = 13
-PWMA = 18
-BIN1 = 20
-BIN2 = 16
-PWMB = 19
+#define actuators GPIOs 
+STDBY = 19
+AIN1 = 13
+AIN2 = 6
+PWMA = 5
+BIN1 = 26
+BIN2 = 20
+PWMB = 21
 
 # Define led pins as output
 GPIO.setup(STDBY, GPIO.OUT)   
@@ -24,15 +24,16 @@ GPIO.setup(PWMB, GPIO.OUT)
 
 
 # Run PWM
-GPIO.output(AIN1, 1)
-GPIO.output(AIN2, 0)
+GPIO.output(AIN1, 0)
+GPIO.output(AIN2, 1)
 GPIO.output(BIN1, 1)
 GPIO.output(BIN2, 0)
 GPIO.output(STDBY, 1)
 
-LEFT_MOTOR = GPIO.PWM(PWMA, 50)
-
-LEFT_MOTOR.start(70)
-time.sleep(100)
-LEFT_MOTOR.stop()
-GPIO.cleanup()
+while(1):
+	GPIO.output(PWMA, 1)
+	GPIO.output(PWMB, 1)
+	time.sleep(0.005)
+	GPIO.output(PWMA, 0)
+	GPIO.output(PWMB, 0)
+	time.sleep(0.005)

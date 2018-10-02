@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
    <head>
 	   <style> 
 		   body {
@@ -36,10 +37,79 @@
 	left: 110px;
 }
 
+.RGB_RED{
+	position:absolute;
+	top: 500px;
+	left: 500px;
+}
+
+.RGB_GREEN{
+	position:absolute;
+	top: 600px;
+	left: 500px;
+}
+
 h1 {
 	color: black;
 }
 
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  top: 300px;
+  left: 500px;
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
 
 </style> 
       <title>GPIO Control</title>
@@ -51,6 +121,7 @@ h1 {
 	   <img src="http://172.20.10.7:8081" /> <!--Enter the IP Address of your Raspberry Pi-->
 	   
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type=text/javascript>
         $(function() {
           $('a#forwards').on('mousedown', function() {
@@ -132,9 +203,50 @@ h1 {
           });
         });
         
+        $(function() {
+          $('a#RED').on('mousedown', function() {
+            $.getJSON('/redled',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#RED').on('click', function() {
+            $.getJSON('/stop',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+        
+        
+		$(document).ready(function() {
+		//set initial state.
+			$('#mycheck').change(function() {
+				if(this.checked) {
+					$.getJSON('/manual',
+                function(data) {
+              //do nothing
+					});
+				} 
+				else {
+					$.getJSON('/auto',
+                function(data) {
+              //do nothing
+					});
+				}      
+			});
+		});
+       
         
         
 </script>
+
+
 
 <div class='Up'>
         <form>
@@ -165,6 +277,24 @@ h1 {
 			<a href=# id=stop><img src="https://openclipart.org/download/19519/schoolfreeware-Stop-Sign.svg" style="width:82px; height:86px" title="stop" alt="Stop"></a>
         </form>    
 </div>	 
+
+<div class='RGB_RED'>
+        <form>
+			<a href=# id=RED><img src="https://openclipart.org/download/88123/led-red-black.svg" style="width:82px; height:86px" title="redled" alt="redLed"></a>
+        </form>    
+</div>	 
+
+<div class='RGB_GREEN'>
+        <form>
+			<a href=# id=GREEN><img src="https://openclipart.org/download/88117/led-green-black.svg" style="width:82px; height:86px" title="greenled" alt="greenLed"></a>
+        </form>    
+</div>	 
+	   
+
+ <label class="switch">
+  <input type="checkbox"  id=mycheck>
+  <span class="slider round"></span>
+</label>
 	   
    </body>
 </html>

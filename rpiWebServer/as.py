@@ -1,7 +1,4 @@
 #!/usr/bin/python
-
-# 28/9: Pins updated for shield, while loop replacing PWM function.
-
 import RPi.GPIO as GPIO
 import time
 GPIO.setmode(GPIO.BCM)
@@ -27,14 +24,12 @@ GPIO.setup(PWMB, GPIO.OUT)
 
 
 # Run PWM
-GPIO.output(AIN1, 1)
-GPIO.output(AIN2, 0)
-GPIO.output(BIN1, 1)
-GPIO.output(BIN2, 0)
+GPIO.output(AIN1, 0)
+GPIO.output(AIN2, 1)
+GPIO.output(BIN1, 0)
+GPIO.output(BIN2, 1)
 GPIO.output(STDBY, 1)
 
-
-#Default 50% Duty Cycle, Tweak for appropriate speed
 while(1):
 	GPIO.output(PWMA, 1)
 	GPIO.output(PWMB, 1)

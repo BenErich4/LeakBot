@@ -28,3 +28,6 @@ while 1:
 	time.sleep(0.0005)
 	GPIO.output(ledYlw, 0)
 
+#sudo service motion start
+#sudo modprobe bcm2835-v4l2
+#sudo service motion restart
