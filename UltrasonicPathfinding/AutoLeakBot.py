@@ -55,12 +55,11 @@ class AutoLeakBot(object)
 		GPIO.setup(R_PIN, GPIO.OUT)
 		GPIO.setup(G_PIN, GPIO.OUT)
 		GPIO.setup(B_PIN, GPIO.OUT)
-		GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
-		GPIO.add_event_detect(WATER_PIN, GPIO.RISING, callback = waterDetected) # add interrupt to water pin, waterDetected set as ISR
+		#GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
+		#GPIO.add_event_detect(WATER_PIN, GPIO.RISING, callback = waterDetected) # add interrupt to water pin, waterDetected set as ISR
 		GPIO.output(TRIGGER_PIN, 0)
 		self.readGPS('LatLong', 'intial')
 		self.servoPWM = GPIO.PWM(SERVO_PIN, 50); # adds PWM functionality to servo control pin (50 Hz)
-		self.servoPWM.start(0)
 		self.setSensorAngle(CENTRE)	# make sensor point forward
 
 
@@ -95,6 +94,11 @@ class AutoLeakBot(object)
 
 		startBearing = self.getBearingToStart()
 		turnAngle = startBearing - self.currentBearing
+		
+		# if turning more than 180 anticlockwise, get equivalent clockwise turn
+		if (turnAngle < -180)
+			turnAngle = 360 - turnAngle
+			
 		self.turnByAngle(turnAngle)
 
 
@@ -146,11 +150,11 @@ class AutoLeakBot(object)
 	# Set the angle of the ultra sonic sensor's servo motor
 	def setSensorAngle(self, angle):
 		duty = (angle / 18.6) + 2.5
-		GPIO.output(SERVO_PIN, True)
-		self.servoPWM.ChangeDutyCycle(duty)
+		#GPIO.output(SERVO_PIN, True)
+		self.servoPWM.start(duty)
 		time.sleep(0.5)
-		GPIO.output(SERVO_PIN, False)
-		self.servoPWM.ChangeDutyCycle(0)
+		#GPIO.output(SERVO_PIN, False)
+		self.servoPWM.stop()
 		print angle
 
 	def waterDetected(self):
@@ -186,7 +190,7 @@ class AutoLeakBot(object)
 		self.takeMeasurement(RIGHT);
 		time.sleep(DELAY)
 		self.setSensorAngle(CENTRE); # Re-centre the servo motor to face in front of the robot chassis to detect future head-on collisions
-		self.servoPWM.stop();
+		# self.servoPWM.stop();
 
 
 	def checkAhead(self):

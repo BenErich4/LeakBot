@@ -11,11 +11,14 @@ def main():
 	GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
 	GPIO.add_event_detect(WATER_PIN, GPIO.RISING) # add interrupt to water pin
 	jim.setup()
-	while !(jim.waterFound):
+	while True:
 		#search for water
 		jim.checkAhead()
 		if (jim.isObstructed()):
-			jim.makeDecision()
+			jim.change()
+		# if found water
+		if (GPIO.event_detected()):
+			break
 		jim.moveforward()
 		sleep(500)
 
