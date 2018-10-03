@@ -41,6 +41,7 @@ class AutoLeakBot(object)
 		self.servoPWM = 0
 		self.waterFound = False # has it found water?
 		self.backAtStart = False # has it returned after finding water?
+		self.isMoving = False
 	
 
 	def setup(self):
@@ -98,7 +99,7 @@ class AutoLeakBot(object)
 		# if turning more than 180 anticlockwise, get equivalent clockwise turn
 		if (turnAngle < -180)
 			turnAngle = 360 - turnAngle
-			
+
 		self.turnByAngle(turnAngle)
 
 
@@ -158,13 +159,13 @@ class AutoLeakBot(object)
 		print angle
 
 	def waterDetected(self):
-		# self.stopMovement
+		self.stopMovement()
 		self.readGPS('LatLong', 'water')
 		# take photo
-		self.waterFound = True # ****will this break the searching loop immediately after?
+		self.waterFound = True
 		
 
-	def makeDecision(self):
+	def changePath(self):
 		self.stopMoving()
 		self.scanSurroundings()
 
@@ -198,10 +199,7 @@ class AutoLeakBot(object)
 
 
 	def isObstructed(self)
-		if (self.centreSensorDist < MIN_COLLISION_DISTANCE)
-			return True
-		else
-			return False
+		return (self.centreSensorDist < MIN_COLLISION_DISTANCE)
 
 
 	def takeMeasurement(self, position):
@@ -243,11 +241,8 @@ class AutoLeakBot(object)
 	def moveforward(self):
 		# moves forward indefinitley
 		print('FORWARD')
-		# possibly a subprocess to drive motors until stopped with a 'kill' command
-		# sleep(1000)
-		# need to take bearing measurements periodically while it's moving forward somehow
 
-		# or simply set pins HIGH/PWM?
+		# should be a pwm.start() call that means it just keeps going
 
 
 	def turnRight(self):
@@ -263,6 +258,5 @@ class AutoLeakBot(object)
 
 
 	def stopMovement(self)
-		# a 'kill' command for a subprocess?
-
-		# or simply set pins LOW?
+		# lots of pwm.stop() calls
+		

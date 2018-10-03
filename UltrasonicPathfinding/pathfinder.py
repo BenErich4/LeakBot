@@ -9,22 +9,24 @@ jim = AutoLeakBot()
 def main():
 	GPIO.setmode(GPIO.BOARD);
 	GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
-	GPIO.add_event_detect(WATER_PIN, GPIO.RISING) # add interrupt to water pin
+	GPIO.add_event_detect(WATER_PIN, GPIO.RISING) # add 'interrupt' to water pin
 	jim.setup()
 	while True:
 		#search for water
 		jim.checkAhead()
 		if (jim.isObstructed()):
-			jim.change()
+			jim.changePath()
 		# if found water
 		if (GPIO.event_detected()):
 			break
-		jim.moveforward()
-		sleep(500)
+		if !(jim.isMoving)
+			jim.moveforward()
+		# Robot may sense water during this sleep time
+		# but it would be moving for max 1sec after first sensing water which should be ok
+		sleep(1)
 
-	# could set ISR directly here for water detection?
-	# does the robot actually have to stop right at the instant it detects water? Probably not
-	# just needs to get GPS location of water & take photo - can be done in threaded callback interrupt
+	jim.waterDetected()
+
 	while !(jim.backAtStart):
 		# go back to start
 
