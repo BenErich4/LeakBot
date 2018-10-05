@@ -2,12 +2,12 @@ import RPi.GPIO as GPIO
 import AutoLeakBot
 from time import sleep
 
-# have to delcare this as global since cannot pass objects to ISR when water is detected
-jim = AutoLeakBot()
+WATER_PIN = 23
 
 # This is the main driver function for directing the robot
 def main():
-	GPIO.setmode(GPIO.BOARD);
+	jim = AutoLeakBot()
+	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
 	GPIO.add_event_detect(WATER_PIN, GPIO.RISING) # add 'interrupt' to water pin
 	jim.setup()
@@ -19,7 +19,7 @@ def main():
 		# if found water
 		if (GPIO.event_detected()):
 			break
-		if !(jim.isMoving)
+		if not jim.isMoving():
 			jim.moveforward()
 		# Robot may sense water during this sleep time
 		# but it would be moving for max 1sec after first sensing water which should be ok
@@ -27,12 +27,11 @@ def main():
 
 	jim.waterDetected()
 
-	while !(jim.backAtStart):
+	while not jim.backAtStart():
 		# go back to start
 
 
-	print("yeah buddy")
-	GPIO.cleanup();
+	GPIO.cleanup()
 
 
-main();
+main()

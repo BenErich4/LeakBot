@@ -4,7 +4,7 @@
 
 import RPi.GPIO as GPIO
 import time
-import gpsReader.py as GPS
+import gpsReader as GPS
 import math
 
 # Constants
@@ -22,9 +22,9 @@ LIGHT_PIN = 19
 R_PIN = 20
 G_PIN = 21
 B_PIN = 22
-WATER_PIN = 23
 
-class AutoLeakBot(object)
+
+class AutoLeakBot(object):
 
 	def __init__(self):
 		# just placeholders to be changed later 
@@ -40,13 +40,13 @@ class AutoLeakBot(object)
 		self.rightSensorDist = 0
 		self.servoPWM = 0
 		self.waterFound = False # has it found water?
-		self.backAtStart = False # has it returned after finding water?
 		self.isMoving = False
 	
 
 	def setup(self):
 		GPIO.setwarnings(False) #optional
 		GPIO.cleanup()			#optional
+		GPIO.setmode(BCM)
 		GPIO.setup(SERVO_PIN, GPIO.OUT) #Sets the servo control pin as output
 		GPIO.setup(ECHO_PIN, GPIO.IN)  # Sets the echo as an Input
 		GPIO.setup(TRIGGER_PIN, GPIO.OUT) # Sets the trig as an Output
@@ -74,17 +74,17 @@ class AutoLeakBot(object)
 		
 		# we will update the bearing independent of the coordinates on the assumption that the gps will read the 
 		# coordinates more accurately while stationary, and the bearing more accurateley while moving
-		if (readingType == 'LatLong')
-			if (callType == 'current')
+		if (readingType == 'LatLong'):
+			if (callType == 'current'):
 				self.currentLat = gpsData['latitude']
 				self.currentLat = gpsData['longitude']
-			elif (callType == 'intial')
+			elif (callType == 'intial'):
 				self.startLat = gpsData['latitude']
 				self.startLong = gpsData['longitude']
-			elif (callType == 'water')
+			elif (callType == 'water'):
 				self.waterLat = gpsData['latitude']
 				self.waterLong = gpsData['longitude']
-		elif (readingType == 'bearing')
+		elif (readingType == 'bearing'):
 			self.bearing == gpsData['bearing']
 	
 
@@ -97,7 +97,7 @@ class AutoLeakBot(object)
 		turnAngle = startBearing - self.currentBearing
 		
 		# if turning more than 180 anticlockwise, get equivalent clockwise turn
-		if (turnAngle < -180)
+		if (turnAngle < -180):
 			turnAngle = 360 - turnAngle
 
 		self.turnByAngle(turnAngle)
@@ -108,34 +108,34 @@ class AutoLeakBot(object)
 
 		self.readGPS('LatLong', 'current')
 		
-		if (self.startLat > self.currentLat)
+		if (self.startLat > self.currentLat):
 			# bearing in first quadrant
-			if (self.startLong > self.currentLong)
+			if (self.startLong > self.currentLong):
 				theta = atan((self.startLat - self.currentLat) / (self.startLong - self.currentLong))
 			# bearing in second quadrant
-			elif (self.startLong < self.currentLong)
+			elif (self.startLong < self.currentLong):
 				theta = 180 - atan((self.startLat - self.currentLat) / (self.currentLong - self.startLong))
 			# case that start is directly east of current position
-			else
+			else:
 				theta = 90
-		elif (self.startLat < self.currentLat)
+		elif (self.startLat < self.currentLat):
 			# bearing in third quadrant
-			if (self.startLong < self.currentLong)
+			if (self.startLong < self.currentLong):
 				theta = 180 + atan((self.currentLat - self.startLat) / (self.currentLong - self.startLong))
 			# bearing in forth quadrand
-			elif (self.startLong > self.currentLong)
+			elif (self.startLong > self.currentLong):
 				theta = 360 - atan((self.currentLat - self.startLat) / (self.startLong - self.currentLong))
 			# case that start is directly west of current position
-			else
+			else:
 				theta = 270
 		# elif (self.startLat == self.currentLat)
-		else
+		else:
 			# case that start is directly north of current position
-			if (self.startLong > self.currentLong)
+			if (self.startLong > self.currentLong):
 				theta = 0
 			# elif (self.startLong < self.currentLong)
 			# case that start is directly south of current position
-			else
+			else:
 				theta = 180
 
 		return theta
@@ -166,7 +166,7 @@ class AutoLeakBot(object)
 		
 
 	def changePath(self):
-		self.stopMoving()
+		self.stopMovement()
 		self.scanSurroundings()
 
 		# Scenario TURN-LEFT
@@ -198,7 +198,7 @@ class AutoLeakBot(object)
 		self.takeMeasurement(CENTRE)
 
 
-	def isObstructed(self)
+	def isObstructed(self):
 		return (self.centreSensorDist < MIN_COLLISION_DISTANCE)
 
 
@@ -237,9 +237,13 @@ class AutoLeakBot(object)
 		# print("Time:      " + str(round((stop - start)*1000, 3)) + " ms")
 	
 
+	def isBackAtStart(self):
+		# check if within 1.5 meters of start point using haversine formula
+
 	# for motor control
 	def moveforward(self):
 		# moves forward indefinitley
+		self.isMoving = True
 		print('FORWARD')
 
 		# should be a pwm.start() call that means it just keeps going
@@ -258,5 +262,6 @@ class AutoLeakBot(object)
 
 
 	def stopMovement(self)
+		self.isMoving = False
 		# lots of pwm.stop() calls
 		
