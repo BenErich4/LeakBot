@@ -140,6 +140,10 @@ def stop():
 def manual():
 	global Manual
 	Manual = True
+	check_kill_process("pathfinder.py")
+	check_kill_process("forwards.py")
+	GPIO.output(PWMA, 0)
+	GPIO.output(PWMB, 0)
 
 	return False;
 	
@@ -147,8 +151,11 @@ def manual():
 def auto():
 	global Manual
 	Manual = False
+		
+	auto = subprocess.Popen("/home/pi/Documents/rpiWebServer/pathfinder.py", shell=True)
+	
 
 	return False;
 		
 if __name__ == "__main__":
-   app.run(host='172.20.10.7', port=80, debug=True)
+   app.run(host='192.168.43.127', port=80, debug=True)
