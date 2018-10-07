@@ -30,10 +30,11 @@ GPIO.output(BIN1, 1)
 GPIO.output(BIN2, 0)
 GPIO.output(STDBY, 1)
 
+
 while(1):
 	GPIO.output(PWMA, 1)
 	GPIO.output(PWMB, 1)
-	time.sleep(0.005)
+	time.sleep(0.006)
 	GPIO.output(PWMA, 0)
 	GPIO.output(PWMB, 0)
-	time.sleep(0.005)
+	time.sleep(0.004)

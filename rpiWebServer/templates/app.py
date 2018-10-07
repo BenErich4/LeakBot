@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import subprocess, os, signal, time
 
-from flask import Flask, render_template, Response, request, redirect, url_for
+from flask import Flask, render_template, Response, request, redirect, url_for, jsonify
 
 UPLOAD_FOLDER = '/home/pi/Documents/rpiWebServer'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpeg'])
@@ -61,6 +61,7 @@ def index():
 	
 @app.route("/forwards")
 def forwards():
+	print "works"
 	if Manual:
 		check_kill_process("forwards.py")
 		check_kill_process("backwards.py")
@@ -68,7 +69,7 @@ def forwards():
 		check_kill_process("right.py")	
 		pwm1 = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/backwards")
 def backwards():
@@ -79,11 +80,10 @@ def backwards():
 		check_kill_process("right.py")	
 		pwm2 = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/left")
 def left():
-	print Manual
 	if Manual == True:
 		check_kill_process("forwards.py")
 		check_kill_process("backwards.py")
@@ -94,7 +94,7 @@ def left():
 	else:
 		pass
 		
-	return False;
+	return jsonify(False)
 	
 @app.route("/right")
 def right():
@@ -105,14 +105,14 @@ def right():
 		check_kill_process("right.py")	
 		pwm4 = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
 
-	return False;
+	return jsonify(False)
 
 @app.route("/redled")
 def redled():
 	GPIO.output(RGB_GREEN, 0)
 	GPIO.output(RGB_RED,   1)
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/greenled")
 def greenled():
@@ -120,7 +120,7 @@ def greenled():
 	GPIO.output(RGB_GREEN, 1)
 
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/stop")
 def stop():
@@ -134,7 +134,7 @@ def stop():
 
 	GPIO.output(STDBY, 0)
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/manual")
 def manual():
@@ -142,10 +142,13 @@ def manual():
 	Manual = True
 	check_kill_process("pathfinder.py")
 	check_kill_process("forwards.py")
+	check_kill_process("right.py")
+	check_kill_process("left.py")
+	check_kill_process("backwards.py")
 	GPIO.output(PWMA, 0)
 	GPIO.output(PWMB, 0)
 
-	return False;
+	return jsonify(False)
 	
 @app.route("/auto")
 def auto():
@@ -155,7 +158,11 @@ def auto():
 	auto = subprocess.Popen("/home/pi/Documents/rpiWebServer/pathfinder.py", shell=True)
 	
 
-	return False;
+	return jsonify(False)
+
+	
+	
+	
 		
 if __name__ == "__main__":
-   app.run(host='192.168.43.127', port=80, debug=True)
+   app.run(host='172.20.10.7', debug=True)

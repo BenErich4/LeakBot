@@ -53,7 +53,6 @@ class AutoLeakBot(object):
 	
 
 	def setup(self):
-		GPIO.cleanup()			#optional
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setwarnings(False) #optional
 		GPIO.setup(PWMA, GPIO.OUT)
@@ -67,7 +66,8 @@ class AutoLeakBot(object):
 		#GPIO.setup(WATER_PIN, GPIO.IN) # need to add pull up/down?
 		#GPIO.add_event_detect(WATER_PIN, GPIO.RISING, callback = waterDetected) # add interrupt to water pin, waterDetected set as ISR
 		GPIO.output(TRIGGER_PIN, 0)
-		self.readGPS('LatLong', 'intial')
+		#self.readGPS('LatLong', 'intial')
+		#print "gps read"
 		self.setSensorAngle(CENTRE)	# make sensor point forward
 
 
@@ -85,6 +85,8 @@ class AutoLeakBot(object):
 			if (callType == 'current'):
 				self.currentLat = gpsData['latitude']
 				self.currentLat = gpsData['longitude']
+				globallist['currentLat'] =gpsData['latitude']
+				
 			elif (callType == 'intial'):
 				self.startLat = gpsData['latitude']
 				self.startLong = gpsData['longitude']
@@ -157,7 +159,7 @@ class AutoLeakBot(object):
 
 	def waterDetected(self):
 		self.stopMovement()
-		self.readGPS('LatLong', 'water')
+		#self.readGPS('LatLong', 'water')
 		# take photo
 		self.waterFound = True
 		
@@ -169,23 +171,23 @@ class AutoLeakBot(object):
 
 		# Scenario TURN-LEFT
 		if (self.leftSensorDist > self.rightSensorDist):
-			left = subprocess.Popen("/home/pi/Documents/rpiWebServer/left.py", shell=True)
-			time.sleep(2)
-			check_kill_process("left.py")
+			#left = subprocess.Popen("/home/pi/Documents/rpiWebServer/left.py", shell=True)
+			#time.sleep(2)
+			#check_kill_process("left.py")
 			print('left')
 
 		# Scenario TURN-RIGHT
 		elif (self.rightSensorDist > self.leftSensorDist):
-			right = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
-			time.sleep(2)
-			check_kill_process("right.py")
+			#right = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
+			#time.sleep(2)
+			#check_kill_process("right.py")
 			print('right')
 			
 		# Scenario REVERSE
 		elif (self.rightSensorDist == self.leftSensorDist):
-			ackwards = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
-			time.sleep(2)
-			check_kill_process("backwards.py")
+			#backwards = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
+			#time.sleep(2)
+			#check_kill_process("backwards.py")
 			print('reverse')
 
 
@@ -268,7 +270,7 @@ class AutoLeakBot(object):
 	# for motor control
 	def moveforward(self):
 		#self.isMoving = True
-		forward = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
+		#forward = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
 		print('FORWARD')
 
 		# should be a pwm.start() call that means it just keeps going

@@ -21,7 +21,7 @@ def convertToDecimal(coordStr):
 
 def read():	
 	#open the GPIO pins' serial port where the GPS is plugged in
-	gps = serial.Serial("/dev/ttyS0", baudrate = 9600)
+	gps = serial.Serial("/dev/ttyAMA0", baudrate = 9600)
 	
 	#construct an empty dictionary
 	gpsData = {}

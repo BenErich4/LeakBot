@@ -226,18 +226,24 @@ input:checked + .slider:before {
         
 		$(document).ready(function() {
 		//set initial state.
+		$.getJSON('/manual',
+			function(data) {
+				// do nothing
+			});
 			$('#mycheck').change(function() {
 				if(this.checked) {
 					$.getJSON('/manual',
                 function(data) {
               //do nothing
 					});
+				return false;
 				} 
 				else {
 					$.getJSON('/auto',
                 function(data) {
               //do nothing
 					});
+				return false;
 				}      
 			});
 		});
@@ -292,7 +298,7 @@ input:checked + .slider:before {
 	   
 
  <label class="switch">
-  <input type="checkbox"  id=mycheck>
+  <input type="checkbox"  id=mycheck checked>
   <span class="slider round"></span>
 </label>
 	   
