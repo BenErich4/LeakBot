@@ -180,11 +180,20 @@ def auto():
 def update_telemetry():
 	global Manual
 	telemetry_data = {}
-	filo = open("telemetry.txt", "r")
-	a = str(filo.read())
+	
+	with open('telemetry.txt', 'r') as telemFile:
+		# read a list of lines into data
+		telemList = telemFile.readlines()
 	filo.close()
+	
+	telemetry_data['waterFound'] = telemList(WATER_FOUND)
+	telemetry_data['currentLat'] = telemList(CURRENT_LAT)
+	telemetry_data['currentLong'] = telemList(CURRENT_LONG)
+	telemetry_data['waterLat'] = telemList(WATER_LAT)
+	telemetry_data['waterLong'] = telemList(WATER_LONG)
+	
 	print (a+"prin")
-	if (a == "True"):
+	if (telemetry_data['waterFound'] == "True"):
 		Manual = True
 		GPIO.output(RGB_RED,   0)
 		GPIO.output(RGB_GREEN, 1)
@@ -207,4 +216,4 @@ def lightOff():
 	
 		
 if __name__ == "__main__":
-   app.run(host='192.168.1.245', debug=True)
+   app.run(host='192.168.137.154', debug=True)

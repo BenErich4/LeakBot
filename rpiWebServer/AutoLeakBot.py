@@ -24,14 +24,11 @@ WATER_PIN = 4
 PWMA = 5
 PWMB = 21
 
-
-CURRENT_LAT = 0
-CURRENT_LONG = 1
-WATER_FOUND = 2
-START_LAT = 3
-START_LONG = 4
-WATER_LAT = 5
-WATER_LONG = 6
+WATER_FOUND = 0
+CURRENT_LAT = 1
+CURRENT_LONG = 2
+WATER_LAT = 3
+WATER_LONG = 4
 
 def check_kill_process(pstring):
 		for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
@@ -314,7 +311,19 @@ class AutoLeakBot(object):
 		self.isMoving = False
 		# lots of pwm.stop() calls
 		
-	#def writeToTelemetryFile(data, line_num):
+	def writeToTelemetryFile(data, line_num):
+		to_write = str(data)+'\n'
+		
+		with open('stats.txt', 'r') as txt:
+		# read a list of lines into data
+			data = txt.readlines()
+
+		# now change the 2nd line, note that you have to add a newline
+		data[line_num] = to_write
+
+		# and write everything back
+		with open('stats.txt', 'w') as file:
+			file.writelines( data )
 		
 		
 		
