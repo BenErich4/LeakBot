@@ -1,0 +1,11 @@
+{# the curley bracketed placeholders are jinga2 template engine code
+	that flask uses to format variables into HTML code #}
+{# more info here https://www.tutorialspoint.com/flask/flask_templates.htm #}
+<ul>
+	{% if gpsData['fix'] %}
+		<li>Lat = {{ gpsData.latitude }}</li>
+		<li>Long = {{ gpsData.longitude }}</li>
+	{% else %}
+		<li>No fix!</li>
+	{% endif %}
+</ul>

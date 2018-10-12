@@ -8,9 +8,10 @@ import RPi.GPIO as GPIO
 import subprocess, os, signal, time
 import gpsReader as GPS
 import math
+from time import sleep
 
 # Constants
-MIN_COLLISION_DISTANCE = 20 # Furthest distance (cm) the robot can be to an object before stopping
+MIN_COLLISION_DISTANCE = 25 # Furthest distance (cm) the robot can be to an object before stopping
 LEFT = 5 # Ultrasonic Servo Motor Position LEFT
 CENTRE = 90 # Ultrasonic Servo Motor Position CENTRE
 RIGHT = 175 # Ultrasonic Servo Motor Position RIGHT
@@ -22,6 +23,15 @@ LIGHT_PIN = 10
 WATER_PIN = 4
 PWMA = 5
 PWMB = 21
+
+
+CURRENT_LAT = 0
+CURRENT_LONG = 1
+WATER_FOUND = 2
+START_LAT = 3
+START_LONG = 4
+WATER_LAT = 5
+WATER_LONG = 6
 
 def check_kill_process(pstring):
 		for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
@@ -44,7 +54,6 @@ class AutoLeakBot(object):
 		self.centreSensorDist = 0
 		self.rightSensorDist = 0
 		self.servoPWM = 0
-		self.waterFound = False # has it found water?
 		self.backAtStart = False # has it returned after finding water?
 		self.isMoving = False
 		
@@ -85,14 +94,18 @@ class AutoLeakBot(object):
 			if (callType == 'current'):
 				self.currentLat = gpsData['latitude']
 				self.currentLat = gpsData['longitude']
-				globallist['currentLat'] =gpsData['latitude']
-				
+				#telemetry.dataList['currentLat'] = gpsData['latitude']
+				#telemetry.dataList['currentLong'] = gpsData['longitude']
 			elif (callType == 'intial'):
 				self.startLat = gpsData['latitude']
 				self.startLong = gpsData['longitude']
+				#telemetry.dataList['startLat'] = gpsData['latitude']
+				#telemetry.dataList['startLong'] = gpsData['longitude']
 			elif (callType == 'water'):
 				self.waterLat = gpsData['latitude']
 				self.waterLong = gpsData['longitude']
+				#telemetry.dataList['waterLat'] = gpsData['latitude']
+				#telemetry.dataList['waterLong'] = gpsData['longitude']
 		elif (readingType == 'bearing'):
 			self.bearing == gpsData['bearing']
 	
@@ -159,9 +172,12 @@ class AutoLeakBot(object):
 
 	def waterDetected(self):
 		self.stopMovement()
+		filee = open("telemetry.txt", "w")
+		filee.write("True")
+		filee.close()
 		#self.readGPS('LatLong', 'water')
 		# take photo
-		self.waterFound = True
+		
 		
 	
 
@@ -171,24 +187,24 @@ class AutoLeakBot(object):
 
 		# Scenario TURN-LEFT
 		if (self.leftSensorDist > self.rightSensorDist):
-			#left = subprocess.Popen("/home/pi/Documents/rpiWebServer/left.py", shell=True)
-			#time.sleep(2)
-			#check_kill_process("left.py")
-			print('left')
+			left = subprocess.Popen("/home/pi/Documents/rpiWebServer/left.py", shell=True)
+			time.sleep(0.5)
+			check_kill_process("left.py")
+			print('Drive Left')
 
 		# Scenario TURN-RIGHT
 		elif (self.rightSensorDist > self.leftSensorDist):
-			#right = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
-			#time.sleep(2)
-			#check_kill_process("right.py")
-			print('right')
+			right = subprocess.Popen("/home/pi/Documents/rpiWebServer/right.py", shell=True)
+			time.sleep(0.5)
+			#heck_kill_process("right.py")
+			print('Drive right')
 			
 		# Scenario REVERSE
 		elif (self.rightSensorDist == self.leftSensorDist):
-			#backwards = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
-			#time.sleep(2)
-			#check_kill_process("backwards.py")
-			print('reverse')
+			backwards = subprocess.Popen("/home/pi/Documents/rpiWebServer/backwards.py", shell=True)
+			time.sleep(0.5)
+			check_kill_process("backwards.py")
+			print('Drive reverse')
 
 
 	# Scan to the LEFT, RIGHT and CENTRE of the robot to take measurements of its surroundings
@@ -204,7 +220,9 @@ class AutoLeakBot(object):
 
 
 	def checkAhead(self):
+		self.stopMovement()
 		self.takeMeasurement(CENTRE)
+		sleep(1)
 
 
 	def isObstructed(self):
@@ -216,17 +234,17 @@ class AutoLeakBot(object):
 		#GPIO.output(SERVO_PIN, True)
 		if angle == CENTRE:
 			cent = subprocess.Popen("/home/pi/Documents/rpiWebServer/ServoCentre.py", shell=True)
-			time.sleep(2)
+			time.sleep(0.5)
 			print "centre"
 
 		elif angle == LEFT:
 			left = subprocess.Popen("/home/pi/Documents/rpiWebServer/ServoLeft.py", shell=True)
-			time.sleep(2)
+			time.sleep(0.5)
 			print "left"
 
 		elif angle == RIGHT:
 			right = subprocess.Popen("/home/pi/Documents/rpiWebServer/ServoRight.py", shell=True)
-			time.sleep(2)
+			time.sleep(0.5)
 			print "right"
 
 
@@ -269,9 +287,9 @@ class AutoLeakBot(object):
 
 	# for motor control
 	def moveforward(self):
-		#self.isMoving = True
-		#forward = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
-		print('FORWARD')
+		self.isMoving = True
+		forward = subprocess.Popen("/home/pi/Documents/rpiWebServer/forwards.py", shell=True)
+		print('Drive FORWARD')
 
 		# should be a pwm.start() call that means it just keeps going
 
@@ -289,9 +307,14 @@ class AutoLeakBot(object):
 
 
 	def stopMovement(self):
+		print "STOPPED"
 		check_kill_process("forwards.py")
 		GPIO.output(PWMA, 0)
 		GPIO.output(PWMB, 0)
 		self.isMoving = False
 		# lots of pwm.stop() calls
+		
+	#def writeToTelemetryFile(data, line_num):
+		
+		
 		

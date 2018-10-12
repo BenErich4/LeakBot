@@ -5,12 +5,15 @@ import RPi.GPIO as GPIO
 import AutoLeakBot
 from time import sleep
 from AutoLeakBot import AutoLeakBot
+import app
+
 
 WATER_PIN = 4
-	
+
 
 # This is the main driver function for directing the robot
 def main():
+	global Manual
 	jim = AutoLeakBot()
 	print "object"
 	jim.setup()
@@ -27,15 +30,18 @@ def main():
 		# if found water
 		if (GPIO.event_detected(WATER_PIN)):
 			print "water"
+			Manual = True
 			break
 		print (GPIO.input(WATER_PIN))
 		if not jim.isMoving:
 			jim.moveforward()
 		# Robot may sense water during this sleep time
 		# but it would be moving for max 1sec after first sensing water which should be ok
-		sleep(1)
+		sleep(0.5)
 
 	jim.waterDetected()
+	
+	#telemetry.found = True
 
 	#while not jim.backAtStart():
 		# go back to start
