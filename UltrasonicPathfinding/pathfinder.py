@@ -18,7 +18,7 @@ def main():
 			jim.changePath()
 		# if found water
 		if (GPIO.event_detected()):
-			break
+			break  
 		if not jim.isMoving():
 			jim.moveforward()
 		# Robot may sense water during this sleep time

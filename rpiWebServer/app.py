@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import subprocess, os, signal, time
 import telemetry
 import AutoLeakBot
+import gpsReader as gps
 
 
 
@@ -58,6 +59,30 @@ GPIO.output(PWMB, GPIO.LOW)
 #GPIO.output(RGB_GREEN, GPIO.LOW)
 GPIO.output(LIGHT_PIN, GPIO.LOW)
 
+def resetTelemFile():
+	with open('stats.txt', 'r') as txt:
+		# read a list of lines into data
+		data = txt.readlines()
+	txt.close()
+
+	# now change the lines wishing to write to (see constants for defined line numbers)
+	data[WATER_FOUND] = "False\n"
+	gpsReading = gps.read()
+
+	if gpsReading['fix']:
+		data[CURRENT_LAT] = str(gpsReading['latitude'])+'\n'
+		data[CURRENT_LONG] = str(gpsReading['longitude'])+'\n'
+	else:
+		data[CURRENT_LAT] = "No GPS Fix"
+		data[CURRENT_LONG] = "No GPS Fix"
+	date[WATER_LAT] = "Not Yet Found\n"
+	data[WATER_LONG] = "Not Yet Found\n"
+
+	# and write everything back
+	with open('stats.txt', 'w') as file:
+		txt.writelines(data)
+	txt.close()
+
 def check_kill_process(pstring):
 	for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
 		fields = line.split()
@@ -68,9 +93,9 @@ def check_kill_process(pstring):
 def index():
 	GPIO.output(RGB_GREEN, 0)
 	GPIO.output(RGB_RED,   1)
-	filee = open("telemetry.txt", "w")
-	filee.write("False")
-	filee.close()
+	
+	resetTelemFile()
+
 	return render_template('index.html')
 	
 @app.route("/forwards")
@@ -169,9 +194,7 @@ def manual():
 def auto():
 	global Manual
 	Manual = False
-	filee = open("telemetry.txt", "w")
-	filee.write("False")
-	filee.close()	
+	resetTelemFile()	
 	auto = subprocess.Popen("/home/pi/Documents/rpiWebServer/pathfinder.py", shell=True)
 
 	return jsonify(False)
@@ -192,15 +215,20 @@ def update_telemetry():
 	telemetry_data['waterLat'] = telemList(WATER_LAT)
 	telemetry_data['waterLong'] = telemList(WATER_LONG)
 	
-	print (a+"prin")
+	foundWater = False
+
 	if (telemetry_data['waterFound'] == "True"):
 		Manual = True
+		foundWater = True
 		GPIO.output(RGB_RED,   0)
 		GPIO.output(RGB_GREEN, 1)
-		
+	
+	result = [{'data': render_template('response.html', telemetry_data=telemetry_data), 'waterFound': foundWater}]
+
+
 	print ("Manual ="+str(Manual))
 
-	return jsonify(a=a)
+	return jsonify(result)
 	
 @app.route("/lightOn")
 def lightOn():

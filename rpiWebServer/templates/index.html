@@ -235,8 +235,8 @@ input:checked + .lslider:after
 				//when gets a successful response..
 				success: function(response){
 					//overwrite data in <div> id="response"
-					$('div#telemetry').html(response.a);
-					if (response.a == "True"){
+					$('div#telemetry').html(response.data);
+					if (response.waterFound){
 						document.getElementById("mycheck").checked = true;
 					}
 				}
@@ -444,7 +444,7 @@ input:checked + .lslider:after
 </label>
 
 <br>
-Water: 
+ 
 <div id=telemetry></div>
 	   
    </body>

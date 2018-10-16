@@ -169,9 +169,33 @@ class AutoLeakBot(object):
 
 	def waterDetected(self):
 		self.stopMovement()
-		filee = open("telemetry.txt", "w")
-		filee.write("True")
-		filee.close()
+		
+		with open('stats.txt', 'r') as txt:
+		# read a list of lines into data
+			data = txt.readlines()
+		txt.close()
+
+		gpsReading = GPS.read()
+		# now change the line wishing to write to (see constants for defined line numbers)
+		data[WATER_FOUND] = "True\n"
+		
+		if gpsReading['fix']:
+			data[CURRENT_LAT] = gpsReading['latitude']
+			data[CURRENT_LONG] = gpsReading['longitude']
+			data[WATER_LAT] = gpsReading['latitude']
+			data[WATER_LONG] = gpsReading['longitude']
+		else:
+			data[CURRENT_LAT] = 'No GPS Fix\n'
+			data[CURRENT_LONG] = 'No GPS Fix\n'
+			data[WATER_LAT] = 'No GPS Fix\n'
+			data[WATER_LONG] = 'No GPS Fix\n'
+
+		# and write everything back
+		with open('stats.txt', 'w') as file:
+			txt.writelines(data)
+		txt.close()
+
+
 		#self.readGPS('LatLong', 'water')
 		# take photo
 		
@@ -312,18 +336,18 @@ class AutoLeakBot(object):
 		# lots of pwm.stop() calls
 		
 	def writeToTelemetryFile(data, line_num):
-		to_write = str(data)+'\n'
+		to_write = str(data)
 		
 		with open('stats.txt', 'r') as txt:
 		# read a list of lines into data
 			data = txt.readlines()
+		txt.close()
 
-		# now change the 2nd line, note that you have to add a newline
+		# now change the line wishing to write to (see constants for defined line numbers)
 		data[line_num] = to_write
 
 		# and write everything back
 		with open('stats.txt', 'w') as file:
-			file.writelines( data )
-		
-		
-		
+			txt.writelines(data)
+		txt.close()
+	

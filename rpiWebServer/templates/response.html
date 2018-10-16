@@ -2,10 +2,9 @@
 	that flask uses to format variables into HTML code #}
 {# more info here https://www.tutorialspoint.com/flask/flask_templates.htm #}
 <ul>
-	{% if gpsData['fix'] %}
-		<li>Lat = {{ gpsData.latitude }}</li>
-		<li>Long = {{ gpsData.longitude }}</li>
-	{% else %}
-		<li>No fix!</li>
-	{% endif %}
+		<li>Water Found? = {{ telemetry_data.waterFound }}</li>
+		<li>Current Latitude = {{ telemetry_data.currentLat }}</li>
+		<li>Current Longitude = {{ telemetry_data.currentLong }}</li>
+		<li>Water's Latitude = {{ telemetry_data.waterLat }}</li>
+		<li>Water's Longitude = {{ telemetry_data.waterLong }}</li>
 </ul>
